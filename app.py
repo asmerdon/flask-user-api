@@ -128,5 +128,19 @@ def get_users():
     
     return jsonify([dict(row) for row in users]), 200
 
+@app.route('/users/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+    conn.close()
+    
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+    
+    return jsonify(dict(user)), 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)
